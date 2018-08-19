@@ -1,7 +1,7 @@
 ---
 title: "Characterization of missing values in untargeted MS-based metabolomics data and evaluation of missing data handling strategies"
 subtitle: "Example code for data simulation and imputation "
-author: "Do & Wahl et al."
+author: "K.T. Do\\*, S. Wahl\\*, J. Raffler, S. Molnos, M. Laimighofer, J. Adamski, K. Suhre, K. Strauch, A. Peters, C. Gieger, C. Langenberg, I.D. Stewart, F.J. Theis, H. Grallert, G. Kastenmueller\\#, J. Krumsiek\\#"
 date: "27.06.2018"
 vignette: >
   %\VignetteIndexEntry{Bioconductor style for PDF documents}
@@ -29,7 +29,6 @@ require(parallel)
 require(corpcor)
 
 source("gen.data.met.r")
-set.seed(123)
 ```
 
 
@@ -39,7 +38,7 @@ n <- 250
 naux <- 5	
 p <- 2+2*naux
 corr <- 0.2
-pcor12 <- corr/2.004432
+pcor12 <- 0.09977889 # corresponding to Pearson correlation corr = 0.2
 pcoraux <- 0.3165772
 ```
 
@@ -47,11 +46,11 @@ pcoraux <- 0.3165772
 - `naux` is the number of auxiliary metabolites for each metabolite of interest.
 - `p` is the number of variables to be created; in this case, 2 metabolites of interest and 5 auxiliary metabolites for each of them are created.
 - `corr` is the Pearson correlation to achieve between the 2 metabolites of interest.
-- `pcorr12` is the partial correlation between the 2 metabolites of interest such that the set Pearson correlation ($corr=0.2$) is achieved in the overall correlation matrix. 
-- `pcorraux` is the partial correlation of each metabolite of interest with its 5 auxiliary metabolites. In this case, the value was determined numerically based on our real dataset (KORA F4) such that the 5 auxiliary metabolites achieve an adjusted $R^2$ of 50% for the metabolite of interest on average to resemble real data example.
+- `pcor12` is the partial correlation between the 2 metabolites of interest such that the set Pearson correlation ($corr=0.2$) is achieved in the overall correlation matrix. 
+- `pcoraux` is the partial correlation of each metabolite of interest with its 5 auxiliary metabolites. In this case, the value was determined numerically based on our real dataset (KORA F4) such that the 5 auxiliary metabolites achieve an adjusted $R^2$ of 50% for the metabolite of interest on average to resemble real data example.
 
 
-## Generate Pearson and partial correlation matrix based on specifed parameters
+## Generate correlation matrix based on specified parameters
 
 ```{r eval=FALSE}
 Pcor=rbind(c(0,pcor12,rep(pcoraux,naux),rep(0,naux)), 
@@ -67,7 +66,7 @@ Cor <- pcor2cor(Pcor)
 - `Cor` is the Pearson correlation matrix generated from the partial correlation matrix using function `pcor2cor` from package `corpcor`.
 
 
-## Generate artificial complete dataset
+## Generate artificial, complete dataset
 
 Based on the parameters defined above, the function `gen.complete.data` generates a list `datCom`, which stores the artificial data in `datCom$x` and runday information in `datCom$rundays`. `datCom$x` is a data.frame with 250 observations and 13 variables. The first and second column correspond to the two main metabolites of interest, columns 3-12 correspond to the auxiliary metabolites, and the last column stores the phenotype (see Supporting Information S3).
 
@@ -80,11 +79,11 @@ datCom <- gen.complete.data(n=n,
 
 - `n` is the number of observations.
 - `p` is the number of variables.
-- `Cor` is correlation structure of the variables.
+- `Cor` is correlation matrix of the variables.
 - `n.rundays` is the number of rundays. In this case, it is specified such that each runday comprises measurements of 34 samples, the everage number observed for the KORA F4 dataset.
 
 
-## Generate artificial incomplete data by introducing missingness
+## Generate artificial, incomplete data by introducing missingness
 
 The function `gen.miss` introduces missing values into the generated artificial data matrix, thereby producing the incomplete data matrix `dat`.
 
@@ -103,13 +102,13 @@ datCom <- data.frame(datCom$x,rundays=datCom$rundays)
 ```
 
 - `datx` is the complete data set (output from `gen.complete.data`).
-- `incoms` is the vector of the proportion (percentage) of incomplete entries to be introduced into the variables; in this case, 10% of each of the two main metabolites will be set to missing, while all remaining variables will remain complete.
+- `incoms` is the vector of the proportion (percentage) of incomplete entries to be introduced into the variables; in this example, 10% of the values of the two main metabolites will be set to missing, while all remaining variables will remain complete.
 - `mech` is the missingness mechanism to be introduced into the data (see Supporting Information S3); in this case, runday-specific probabilistic LOD is used.
-- `betas1` is a vector, which specifies the strength of dependency of missingness from the concentration values; in this case, we specify a strong negative dependency guided by observations from the real dataset (see parameter $\beta_1$ in Table S8 of Supporting Information S3).
-- `strengths.incom.vary` is a vector, which specifies the variation of missingness across rundays; in this case, we set $(min(incom,1-incom)/4)^2$ for moderate variation, which was guided by observations from the real data (see parameter $\sigma^2_{miss}$ in Table S8 of Supporting Information S3).
-- `strengths.beta1.vary` is a vector, which specifies the variation of beta1 across rundays; in this case, we set it to $(\beta_1/2)^2$ for strong variation, which was guided by observations from the real data (see parameter $\sigma^2_{\beta_1}$ in Table S8 of Supporting Information S3).
+- `betas1` is a vector which specifies the strength of dependency of missingness from the concentration values; in this case, we specify a strong, negative dependency guided by observations from the real dataset (see parameter $\beta_1$ in Table S8 of Supporting Information S3).
+- `strengths.incom.vary` is a vector which specifies the variation of missingness across rundays; in this case, we set $(min(incom,1-incom)/4)^2$ for moderate variation, which was guided by observations from the real data (see parameter $\sigma^2_{miss}$ in Table S8 of Supporting Information S3).
+- `strengths.beta1.vary` is a vector which specifies the variation of beta1 across rundays; in this case, we set it to $(\beta_1/2)^2$ for strong variation, which was guided by observations from the real data (see parameter $\sigma^2_{\beta_1}$ in Table S8 of Supporting Information S3).
 - `cors.incom` specifies the correlation of missingness across rundays for the two main metabolites (see parameter $\rho_{miss}$ in Table S8 of Supporting Information S3).
-- `rundays` defines rundays in which each sample was measured.
+- `rundays` defines the number of rundays in which each sample was measured.
 
 
 
@@ -147,7 +146,7 @@ results <- do.imp(dat,
 ```
 
 - `dat` is the incomplete data set generated by the function `gen.miss`; the two columns correspond to the two main metabolites, the third column contains a continuous phenotype without missing values.
-- `datCom` (optional) is the corresponding complete data set generated by the function `gen.complete.data` for head-to-head comparison of the results.
+- `datCom` (optional) is the corresponding complete data set generated by the function `gen.complete.data` for comparison of the results.
 
 - `methods` is a vector of imputation methods to be applied (see Supporting Information S4).
     * cca: complete case analyses
@@ -178,5 +177,5 @@ results <- do.imp(dat,
     * logx: logistic regression with phenotype as response and first metabolite as predictor
     
 - `K` is a vector of neighbors to use for k-nearest neighbor imputation
-- `min.in.runday` specifies the minimum number of observed values in each runday used as a condition to perform ITS imputation; in this case, we set it to half of the average number of observations per runday observed in the real data.
+- `min.in.runday` specifies the minimum number of observed values in each runday used as a condition to perform ITS imputation; in this example, we set it to half of the average number of observations per runday observed in the real data.
 - `return.da1` is a logical parameter indicating that the imputed data should be returned (instead of the evaluation results).
