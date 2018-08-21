@@ -1,8 +1,8 @@
 ---
 title: "Characterization of missing values in untargeted MS-based metabolomics data and evaluation of missing data handling strategies"
 subtitle: "Example code for data simulation and imputation "
-author: "K.T. Do\\*, S. Wahl\\*, J. Raffler, S. Molnos, M. Laimighofer, J. Adamski, K. Suhre, K. Strauch, A. Peters, C. Gieger, C. Langenberg, I.D. Stewart, F.J. Theis, H. Grallert, G. Kastenmueller\\#, J. Krumsiek\\#"
-date: "27.06.2018"
+author: "K.T. Do\\*, S. Wahl\\*, J. Raffler, S. Molnos, M. Laimighofer, J. Adamski, K. Suhre, K. Strauch, A. Peters, C. Gieger, C. Langenberg, I.D. Stewart, F.J. Theis, H. Grallert, G. Kastenmueller, J. Krumsiek"
+date: "`r Sys.Date()`"
 vignette: >
   %\VignetteIndexEntry{Bioconductor style for PDF documents}
   %\VignetteEngine{knitr::rmarkdown}
